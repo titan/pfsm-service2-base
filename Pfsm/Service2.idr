@@ -6,6 +6,15 @@ import Data.List1
 import Pfsm
 import Pfsm.Data
 
+export
+manyToOneFieldFilter : Parameter -> Bool
+manyToOneFieldFilter (_, _, ms)
+  = case lookup "reference" ms of
+         Just (MVString _) => case lookup "mapping" ms of
+                                   Just (MVString "many-to-one") => True
+                                   _ => False
+         _ => False
+
 ------------
 -- Action --
 ------------
