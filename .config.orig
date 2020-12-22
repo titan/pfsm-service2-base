@@ -1,0 +1,4 @@
+NAME=pfsm-service2-base
+PKGPREFIX=Pfsm
+TARGET=$(BUILDDIR)/build/ttc/$(PKGPREFIX)/Service2.ttc
+BUILDDIR=/dev/shm/$(NAME-LINK)
