@@ -6,6 +6,34 @@ import Data.List1
 import Pfsm
 import Pfsm.Data
 
+public export
+data FsmIdStyle = FsmIdStyleGenerate
+                | FsmIdStyleSession
+                | FsmIdStyleDomain
+                | FsmIdStyleUrl
+
+export
+Eq FsmIdStyle where
+  (==) FsmIdStyleGenerate FsmIdStyleGenerate = True
+  (==) FsmIdStyleSession  FsmIdStyleSession  = True
+  (==) FsmIdStyleDomain   FsmIdStyleDomain   = True
+  (==) FsmIdStyleUrl      FsmIdStyleUrl      = True
+  (==) _                  _                  = False
+
+public export
+data MappingStyle = MappingStyleOneToOne
+                  | MappingStyleOneToMany
+                  | MappingStyleManyToOne
+                  | MappingStyleManyToMany
+
+export
+Eq MappingStyle where
+  (==) MappingStyleOneToOne   MappingStyleOneToOne   = True
+  (==) MappingStyleOneToMany  MappingStyleOneToMany  = True
+  (==) MappingStyleManyToOne  MappingStyleManyToOne  = True
+  (==) MappingStyleManyToMany MappingStyleManyToMany = True
+  (==) _                      _                      = False
+
 export
 manyToOneFieldFilter : Parameter -> Bool
 manyToOneFieldFilter (_, _, ms)
@@ -136,3 +164,27 @@ liftIndexStatesOfParticipants states transitions
         indexActions = filter indexOutputActionOfParticipantFilter actions
         pairs = nub $ filter (\(sname, pname) => sname /= "" && pname /= "") $ map (\x => case x of Just x' => x'; _ => ("", "")) $ map liftStateNameFromIndexOutputActionOfParticipant indexActions in
         map (\(sname, pname) => ((derefState sname states), pname)) pairs
+
+-------------
+-- IdStyle --
+-------------
+
+export
+fsmIdStyleOfEvent : Event -> FsmIdStyle
+fsmIdStyleOfEvent (MkEvent _ _ metas)
+  = case lookup "gateway.fsmid-style" metas of
+         Just (MVString "generate") => FsmIdStyleGenerate
+         Just (MVString "session") => FsmIdStyleSession
+         Just (MVString "domain") => FsmIdStyleDomain
+         Just (MVString "url") => FsmIdStyleUrl
+         _ => FsmIdStyleUrl
+
+export
+fsmIdStyleOfFsm : Fsm -> FsmIdStyle
+fsmIdStyleOfFsm (MkFsm _ _ _ _ _ _ metas)
+  = case lookup "gateway.fsmid-style" metas of
+         Just (MVString "generate") => FsmIdStyleGenerate
+         Just (MVString "session") => FsmIdStyleSession
+         Just (MVString "domain") => FsmIdStyleDomain
+         Just (MVString "url") => FsmIdStyleUrl
+         _ => FsmIdStyleUrl
