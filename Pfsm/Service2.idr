@@ -188,3 +188,14 @@ fsmIdStyleOfFsm (MkFsm _ _ _ _ _ _ metas)
          Just (MVString "domain") => FsmIdStyleDomain
          Just (MVString "url") => FsmIdStyleUrl
          _ => FsmIdStyleUrl
+
+---------------
+-- Parameter --
+---------------
+
+export
+payloadParameterFilter : Parameter -> Bool
+payloadParameterFilter (_, _, ms)
+  = case lookup "in-service-context" ms of
+         Just (MVString "true") => False
+         _ => True
